@@ -1,1 +1,7 @@
 @layer reset, base, tokens, recipes, utilities;
+
+@layer base {
+  body {
+    min-height: 100dvh;
+  }
+}

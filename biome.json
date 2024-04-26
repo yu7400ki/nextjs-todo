@@ -24,7 +24,8 @@
           }
         },
         "noDefaultExport": "off",
-        "noImplicitBoolean": "off"
+        "noImplicitBoolean": "off",
+        "noNamespaceImport": "off"
       },
       "nursery": {
         "useImportRestrictions": "error"
