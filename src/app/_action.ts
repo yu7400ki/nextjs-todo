@@ -4,57 +4,30 @@ import { type Todo, store } from "./_store";
 import type { Action } from "./_components";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { parseWithZod } from "@conform-to/zod";
+import { todoCreateSchema, todoSchema } from "./_schema";
+import type { SubmissionResult } from "@conform-to/react";
 
-const parseFormData = (formData: FormData) => {
-  const rawId = formData.get("id");
-  const title = formData.get("title");
-  const deadline = formData.get("deadline");
-  const completed = formData.get("completed") === "on";
-  let id: number | undefined = undefined;
-  if (rawId) {
-    id = Number(rawId);
-    if (Number.isNaN(id)) {
-      return undefined;
-    }
+export const add: Action = async (_: SubmissionResult | undefined, formData: FormData) => {
+  const submission = parseWithZod(formData, {
+    schema: todoCreateSchema,
+  });
+  if (submission.status !== "success") {
+    return submission.reply();
   }
-  if (!title || !deadline || typeof title !== "string" || typeof deadline !== "string") {
-    return undefined;
-  }
-  const date = new Date(deadline);
-  if (Number.isNaN(date.getTime())) {
-    return undefined;
-  }
-  return { id, title, deadline, completed };
-};
-
-export const add: Action = async (_: undefined, formData: FormData) => {
-  const data = parseFormData(formData);
-  if (!data) {
-    return undefined;
-  }
-  const todo = {
-    ...data,
-    completed: false,
-  };
-  await store.add(todo);
+  await store.add(submission.value);
   revalidatePath("/");
   redirect("/");
 };
 
-export const edit: Action = async (_: undefined, formData: FormData) => {
-  const todo = parseFormData(formData);
-  if (!todo) {
-    return undefined;
-  }
-  if (todo.id === undefined) {
-    return undefined;
-  }
-  await store.update({
-    id: todo.id,
-    title: todo.title,
-    deadline: todo.deadline,
-    completed: todo.completed,
+export const edit: Action = async (_: SubmissionResult | undefined, formData: FormData) => {
+  const submmission = parseWithZod(formData, {
+    schema: todoSchema,
   });
+  if (submmission.status !== "success") {
+    return submmission.reply();
+  }
+  await store.update(submmission.value);
   revalidatePath("/");
   redirect("/");
 };

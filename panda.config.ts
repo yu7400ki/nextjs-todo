@@ -9,6 +9,7 @@ export default defineConfig({
       accentColor: "neutral",
       grayColor: "mauve",
       borderRadius: "md",
+      additionalColors: ["red"]
     }),
   ],
   include: ["./src/**/*.{js,jsx,ts,tsx}"],
