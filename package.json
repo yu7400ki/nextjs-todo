@@ -9,11 +9,15 @@
     "start": "next start",
     "lint": "biome lint ./src",
     "lint:fix": "biome lint ./src --apply",
-    "format": "biome format ./src --write"
+    "format": "biome format ./src --write",
+    "generate:migrations": "drizzle-kit generate:sqlite",
+    "migrate": "drizzle-kit push:sqlite"
   },
   "dependencies": {
     "@ark-ui/react": "^2.2.3",
     "@biomejs/biome": "^1.7.1",
+    "better-sqlite3": "^9.6.0",
+    "drizzle-orm": "^0.30.9",
     "lucide-react": "^0.374.0",
     "next": "14.2.3",
     "react": "^18",
@@ -23,9 +27,11 @@
   "devDependencies": {
     "@pandacss/dev": "^0.37.2",
     "@park-ui/panda-preset": "^0.37.0",
+    "@types/better-sqlite3": "^7.6.10",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "drizzle-kit": "^0.20.17",
     "typescript": "^5"
   }
 }

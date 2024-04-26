@@ -9,16 +9,28 @@ import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { IconButton } from "@/components/ui/icon-button";
 import { Button } from "@/components/ui/button";
 import { stack } from "styled-system/patterns";
+import { useFormState } from "react-dom";
+import SubmitButton from "./submit-button";
+
+export type Action = (prev: undefined, formData: FormData) => Promise<undefined>;
 
 type Props = {
-  todo?: Partial<Omit<Todo, "id" | "completed">>;
+  todo?: Partial<Todo>;
+  action: Action;
 };
 
-const toIsoDate = (date: Date) => date.toISOString().split("T")[0];
+const toIsoDate = (date: string) => {
+  const [year, month, day] = date.split("/").map(Number);
+  return `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
+};
 
-export default function TodoForm({ todo }: Props) {
+export default function TodoForm({ todo, action }: Props) {
+  const [_, formAction] = useFormState(action, undefined);
+
   return (
-    <form className={stack({ gap: "4" })}>
+    <form className={stack({ gap: "4" })} action={formAction}>
+      <input type="hidden" name="id" value={todo?.id} />
+      <input type="hidden" name="completed" value={todo?.completed ? "on" : "off"} />
       <Stack gap="1.5">
         <FormLabel htmlFor="title">Title</FormLabel>
         <Input id="title" name="title" defaultValue={todo?.title} />
@@ -26,7 +38,7 @@ export default function TodoForm({ todo }: Props) {
       <DatePicker.Root
         format={(date) => `${date.year}/${date.month}/${date.day}`}
         gap="1.5"
-        defaultValue={todo?.deadline ? [toIsoDate(new Date(todo.deadline))] : undefined}
+        defaultValue={todo?.deadline ? [toIsoDate(todo.deadline)] : undefined}
         name="deadline"
       >
         <DatePicker.Label>Deadline</DatePicker.Label>
@@ -35,7 +47,7 @@ export default function TodoForm({ todo }: Props) {
             <Input />
           </DatePicker.Input>
           <DatePicker.Trigger asChild>
-            <IconButton variant="outline" aria-label="Open date picker">
+            <IconButton type="button" variant="outline" aria-label="Open date picker">
               <Calendar />
             </IconButton>
           </DatePicker.Trigger>
@@ -47,19 +59,19 @@ export default function TodoForm({ todo }: Props) {
                 <>
                   <DatePicker.ViewControl>
                     <DatePicker.PrevTrigger asChild>
-                      <IconButton variant="ghost" size="sm">
+                      <IconButton type="button" variant="ghost" size="sm">
                         <ChevronLeft />
                       </IconButton>
                     </DatePicker.PrevTrigger>
                     <DatePicker.ViewTrigger asChild>
-                      <Button variant="ghost" size="sm">
+                      <Button type="button" variant="ghost" size="sm">
                         <div>
                           {`${api.visibleRange.start.year}/${api.visibleRange.start.month}`}
                         </div>
                       </Button>
                     </DatePicker.ViewTrigger>
                     <DatePicker.NextTrigger asChild>
-                      <IconButton variant="ghost" size="sm">
+                      <IconButton type="button" variant="ghost" size="sm">
                         <ChevronRight />
                       </IconButton>
                     </DatePicker.NextTrigger>
@@ -81,7 +93,9 @@ export default function TodoForm({ todo }: Props) {
                             // biome-ignore lint/suspicious/noArrayIndexKey: This is a static array
                             <DatePicker.TableCell key={id} value={day}>
                               <DatePicker.TableCellTrigger asChild>
-                                <IconButton variant="ghost">{day.day}</IconButton>
+                                <IconButton type="button" variant="ghost">
+                                  {day.day}
+                                </IconButton>
                               </DatePicker.TableCellTrigger>
                             </DatePicker.TableCell>
                           ))}
@@ -97,17 +111,17 @@ export default function TodoForm({ todo }: Props) {
                 <>
                   <DatePicker.ViewControl>
                     <DatePicker.PrevTrigger asChild>
-                      <IconButton variant="ghost" size="sm">
+                      <IconButton type="button" variant="ghost" size="sm">
                         <ChevronLeft />
                       </IconButton>
                     </DatePicker.PrevTrigger>
                     <DatePicker.ViewTrigger asChild>
-                      <Button variant="ghost" size="sm">
+                      <Button type="button" variant="ghost" size="sm">
                         <DatePicker.RangeText />
                       </Button>
                     </DatePicker.ViewTrigger>
                     <DatePicker.NextTrigger asChild>
-                      <IconButton variant="ghost" size="sm">
+                      <IconButton type="button" variant="ghost" size="sm">
                         <ChevronRight />
                       </IconButton>
                     </DatePicker.NextTrigger>
@@ -121,7 +135,9 @@ export default function TodoForm({ todo }: Props) {
                             // biome-ignore lint/suspicious/noArrayIndexKey: This is a static array
                             <DatePicker.TableCell key={id} value={month.value}>
                               <DatePicker.TableCellTrigger asChild>
-                                <Button variant="ghost">{month.label}</Button>
+                                <Button type="button" variant="ghost">
+                                  {month.label}
+                                </Button>
                               </DatePicker.TableCellTrigger>
                             </DatePicker.TableCell>
                           ))}
@@ -137,17 +153,17 @@ export default function TodoForm({ todo }: Props) {
                 <>
                   <DatePicker.ViewControl>
                     <DatePicker.PrevTrigger asChild>
-                      <IconButton variant="ghost" size="sm">
+                      <IconButton type="button" variant="ghost" size="sm">
                         <ChevronLeft />
                       </IconButton>
                     </DatePicker.PrevTrigger>
                     <DatePicker.ViewTrigger asChild>
-                      <Button variant="ghost" size="sm">
+                      <Button type="button" variant="ghost" size="sm">
                         <DatePicker.RangeText />
                       </Button>
                     </DatePicker.ViewTrigger>
                     <DatePicker.NextTrigger asChild>
-                      <IconButton variant="ghost" size="sm">
+                      <IconButton type="button" variant="ghost" size="sm">
                         <ChevronRight />
                       </IconButton>
                     </DatePicker.NextTrigger>
@@ -161,7 +177,9 @@ export default function TodoForm({ todo }: Props) {
                             // biome-ignore lint/suspicious/noArrayIndexKey: This is a static array
                             <DatePicker.TableCell key={id} value={year.value}>
                               <DatePicker.TableCellTrigger asChild>
-                                <Button variant="ghost">{year.label}</Button>
+                                <Button type="button" variant="ghost">
+                                  {year.label}
+                                </Button>
                               </DatePicker.TableCellTrigger>
                             </DatePicker.TableCell>
                           ))}
@@ -175,7 +193,7 @@ export default function TodoForm({ todo }: Props) {
           </DatePicker.Content>
         </DatePicker.Positioner>
       </DatePicker.Root>
-      <Button type="submit">Save</Button>
+      <SubmitButton>Save</SubmitButton>
     </form>
   );
 }

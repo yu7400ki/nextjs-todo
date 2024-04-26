@@ -8,7 +8,7 @@ type Props = {
 
 export default function TodoList({ todos }: Props) {
   return (
-    <VStack gap="2">
+    <VStack gap="2" w="full">
       {todos.map((todo) => (
         <TodoItem key={todo.id} todo={todo} />
       ))}

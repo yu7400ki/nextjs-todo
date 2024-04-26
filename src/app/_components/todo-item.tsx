@@ -8,6 +8,7 @@ import { css } from "styled-system/css";
 import { Pencil, Trash } from "lucide-react";
 import { IconButton } from "@/components/ui/icon-button";
 import Link from "next/link";
+import { remove, update } from "../_action";
 
 type Props = {
   todo: Todo;
@@ -25,6 +26,15 @@ export default function TodoItem({ todo }: Props) {
             textDecoration: "line-through",
           },
         })}
+        onCheckedChange={async (e) => {
+          if (typeof e.checked !== "boolean") {
+            return;
+          }
+          await update({
+            ...todo,
+            completed: e.checked,
+          });
+        }}
       >
         {todo.title}
       </Checkbox>
@@ -32,7 +42,13 @@ export default function TodoItem({ todo }: Props) {
         <Text size="sm" color="fg.muted" mr="1">
           {new Date(todo.deadline).toLocaleDateString("ja-JP")}
         </Text>
-        <IconButton variant="ghost" size="sm">
+        <IconButton
+          variant="ghost"
+          size="sm"
+          onClick={async () => {
+            await remove(todo.id);
+          }}
+        >
           <Trash />
         </IconButton>
         <IconButton variant="ghost" size="sm" asChild>

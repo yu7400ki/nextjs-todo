@@ -1,6 +1,7 @@
 import { VStack } from "styled-system/jsx";
 import { TodoForm } from "../_components";
 import { Text } from "@/components/ui/text";
+import { add } from "../_action";
 
 export default function Page() {
   return (
@@ -8,7 +9,7 @@ export default function Page() {
       <Text as="h1" size="xl">
         Add Todo
       </Text>
-      <TodoForm />
+      <TodoForm action={add} />
     </VStack>
   );
 }

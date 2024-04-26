@@ -1,28 +1,20 @@
 import "server-only";
+import type { Todo, TodoInput } from "db";
+import { db, todos } from "db";
+import { eq } from "drizzle-orm";
 
-export type Todo = {
-  id: number;
-  title: string;
-  deadline: number;
-  completed: boolean;
-};
-
-export type TodoInput = Omit<Todo, "id">;
-
-let id = 1;
-const storage = new Map<number, Todo>();
+export type { Todo, TodoInput };
 
 export const store = {
-  getAll: () => Array.from(storage.values()),
-  get: (id: number) => storage.get(id),
-  add: (todo: TodoInput) => {
-    storage.set(id, { ...todo, id });
-    id++;
+  getAll: async () => await db.select().from(todos).all(),
+  get: async (id: number) => await db.query.todos.findFirst({ where: eq(todos.id, id) }),
+  add: async (todo: TodoInput) => {
+    await db.insert(todos).values(todo);
   },
-  update: (todo: Todo) => {
-    storage.set(todo.id, todo);
+  update: async (todo: Todo) => {
+    await db.update(todos).set(todo).where(eq(todos.id, todo.id));
   },
-  delete: (id: number) => {
-    storage.delete(id);
+  remove: async (id: number) => {
+    await db.delete(todos).where(eq(todos.id, id));
   },
 };
