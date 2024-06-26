@@ -38,6 +38,6 @@ export const update = async (todo: Todo) => {
 };
 
 export const remove = async (id: number) => {
-  revalidatePath("/");
   await store.remove(id);
+  revalidatePath("/");
 };
